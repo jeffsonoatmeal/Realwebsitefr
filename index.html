@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB PRAROZ</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbar from appearing */
+        }
+
+        #fish-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+            z-index: 10; /* Ensure it is above other elements */
+        }
+
+        #movingImage {
+            position: absolute; /* Allow for free movement across the screen */
+            width: 100px; /* Set size of the image */
+            height: auto; /* Maintain aspect ratio */
+        }
+
+        #gameContainer {
+            display: none; /* Initially hidden */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid black;
+            padding: 20px;
+            z-index: 20;
+            text-align: center;
+        }
+
+        #gameTitle {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        #gameBoard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: lightgrey;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="main">
+            <div class="logo">
+                <img src="logo.png">
+            </div>
+            <ul>
+                <li class="active"><a href="#"><i class="fa fa-home"></i>Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Dessert</a></li>
+                <li><a href="#">Appetizers</a></li>
+                <li><a href="#">Pasta</a></li>
+                <li><a href="#">Salad</a></li>
+                <li><a href="#">Burger</a></li>
+                <li><a href="#">Pizza</a></li>
+                <li><a href="#"><i class="fa fa-caret-down"></i> More Recipes <i class="fa fa-caret-down"></i></a>
+                    <div class="sub-menu">
+                        <ul>
+                            <li><a href="#">Cookies</a></li>
+                            <li><a href="#">Sandwich</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="title">
+            <h1>HOMIE RECIPES</h1>
+        </div>
+        <div class="button">
+            <a href="#" class="btn">WATCH VIDEO</a>
+            <a href="#" class="btn">BASIC SKILLS</a>
+            <a href="#" class="btn">LEARN MORE</a>
+        </div>
+    </header>
+    <div id="fish-container">
+        <img id="movingImage" src="fish.png" onclick="showGame()" alt="Moving Fish" />
+    </div>
+    <div id="gameContainer">
+        <div id="gameTitle">1v1</div>
+        <div id="gameBoard">
+            <div class="cell" onclick="playerMove(this, 0)"></div>
+            <div class="cell" onclick="playerMove(this, 1)"></div>
+            <div class="cell" onclick="playerMove(this, 2)"></div>
+            <div class="cell" onclick="playerMove(this, 3)"></div>
+            <div class="cell" onclick="playerMove(this, 4)"></div>
+            <div class="cell" onclick="playerMove(this, 5)"></div>
+            <div class="cell" onclick="playerMove(this, 6)"></div>
+            <div class="cell" onclick="playerMove(this, 7)"></div>
+            <div class="cell" onclick="playerMove(this, 8)"></div>
+        </div>
+    </div>
+    <script>
+        const image = document.getElementById('movingImage');
+        let positionX = Math.random() * window.innerWidth; // Initial X position
+        let positionY = Math.random() * window.innerHeight; // Initial Y position
+        const speed = 0.5; // Speed of movement (smaller value for slower movement)
+        let targetX = positionX; // Target X position
+        let targetY = positionY; // Target Y position
+
+        // Set initial position of the image
+        image.style.left = positionX + 'px';
+        image.style.top = positionY + 'px';
+
+        function setRandomTarget() {
+            // Set a new target position every few seconds
+            targetX = Math.random() * (window.innerWidth - 100); // 100 is the width of the image
+            targetY = Math.random() * (window.innerHeight - 100); // 100 is the height of the image
+            setTimeout(setRandomTarget, 2000); // Change target every 2 seconds
+        }
+        setRandomTarget(); // Start setting targets
+
+        function moveImage() {
+            // Calculate direction towards target
+            const deltaX = targetX - positionX;
+            const deltaY = targetY - positionY;
+
+            // Calculate distance to target
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+            // If the distance to target is small enough, stop moving
+            if (distance < speed) {
+                positionX = targetX;
+                positionY = targetY;
+            } else {
+                // Move towards the target
+                positionX += (deltaX / distance) * speed; // Normalize and scale by speed
+                positionY += (deltaY / distance) * speed; // Normalize and scale by speed
+            }
+
+            // Update image position
+            image.style.left = positionX + 'px';
+            image.style.top = positionY + 'px';
+
+            requestAnimationFrame(moveImage); // Keep the loop going
+        }
+
+        moveImage(); // Start moving the image
+
+        // Show the Tic Tac Toe game
+        function showGame() {
+    document.getElementById('gameContainer').style.display = 'block';
+    showFishClickedImage(); // Show image when the fish is clicked
+}
+
+
+        let board = ['', '', '', '', '', '', '', '', ''];
+        let currentPlayer = 'X';
+
+		function playerMove(cell, index) {
+    if (board[index] === '') {
+        cell.innerText = currentPlayer;
+        board[index] = currentPlayer;
+        if (checkWin(currentPlayer)) {
+            showWinningImage(); // Show winning image when player wins
+            resetGame();
+        } else if (board.includes('')) {
+            computerMove();
+        }
+    }
+}
+
+        function computerMove() {
+            let emptyIndices = board.map((val, index) => val === '' ? index : null).filter(val => val !== null);
+            let randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            board[randomIndex] = 'O';
+            document.querySelectorAll('.cell')[randomIndex].innerText = 'O';
+            if (checkWin('O')) {
+                alert('You lose! The fish disappears.');
+                document.getElementById('movingImage').style.display = 'none';
+                resetGame();
+            }
+        }
+
+        function checkWin(player) {
+            const winningCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6]
+            ];
+            return winningCombinations.some(combination => {
+                return combination.every(index => board[index] === player);
+            });
+        }
+
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.innerText = '';
+            });
+            document.getElementById('gameContainer').style.display = 'none';
+        }
+		function showWinningImage() {
+    const winningImage = document.createElement('img');
+    winningImage.src = 'chillguy.png'; // Image file name
+    winningImage.style.position = 'absolute';
+    winningImage.style.top = '0'; // Start from the top of the viewport
+    winningImage.style.left = '0'; // Start from the left of the viewport
+    winningImage.style.width = '100%'; // Cover the entire width of the viewport
+    winningImage.style.height = '100%'; // Cover the entire height of the viewport
+    winningImage.style.zIndex = '30'; // Ensure it appears on top
+    winningImage.style.objectFit = 'cover'; // Ensure the image covers the screen without distortion
+    document.body.appendChild(winningImage);
+}
+
+
+
+    </script>
+</body>
+</html>
