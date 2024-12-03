@@ -117,55 +117,51 @@
     </div>
     <script>
         const image = document.getElementById('movingImage');
-        let positionX = Math.random() * window.innerWidth; // Initial X position
-        let positionY = Math.random() * window.innerHeight; // Initial Y position
-        const speed = 0.5; // Speed of movement (smaller value for slower movement)
-        let targetX = positionX; // Target X position
-        let targetY = positionY; // Target Y position
+        let positionX = Math.random() * window.innerWidth; 
+        let positionY = Math.random() * window.innerHeight; 
+        const speed = 0.5; 
+        let targetX = positionX; 
+        let targetY = positionY;
 
         // Set initial position of the image
         image.style.left = positionX + 'px';
         image.style.top = positionY + 'px';
 
         function setRandomTarget() {
-            // Set a new target position every few seconds
-            targetX = Math.random() * (window.innerWidth - 100); // 100 is the width of the image
-            targetY = Math.random() * (window.innerHeight - 100); // 100 is the height of the image
-            setTimeout(setRandomTarget, 2000); // Change target every 2 seconds
+            
+            targetX = Math.random() * (window.innerWidth - 100); 
+            targetY = Math.random() * (window.innerHeight - 100); 
+            setTimeout(setRandomTarget, 2000); 
         }
-        setRandomTarget(); // Start setting targets
+        setRandomTarget(); 
 
         function moveImage() {
-            // Calculate direction towards target
+            
             const deltaX = targetX - positionX;
             const deltaY = targetY - positionY;
 
-            // Calculate distance to target
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-            // If the distance to target is small enough, stop moving
             if (distance < speed) {
                 positionX = targetX;
                 positionY = targetY;
             } else {
                 // Move towards the target
-                positionX += (deltaX / distance) * speed; // Normalize and scale by speed
-                positionY += (deltaY / distance) * speed; // Normalize and scale by speed
+                positionX += (deltaX / distance) * speed; 
+                positionY += (deltaY / distance) * speed; 
             }
-
-            // Update image position
+		
             image.style.left = positionX + 'px';
             image.style.top = positionY + 'px';
 
-            requestAnimationFrame(moveImage); // Keep the loop going
+            requestAnimationFrame(moveImage); // loop
         }
 
-        moveImage(); // Start moving the image
+        moveImage(); 
 
-        // Show the Tic Tac Toe game
         function showGame() {
     document.getElementById('gameContainer').style.display = 'block';
-    showFishClickedImage(); // Show image when the fish is clicked
+    showFishClickedImage(); 
 }
 
 
